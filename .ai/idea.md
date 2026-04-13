@@ -23,7 +23,7 @@ Here's the architecture for a multi-agent Indian stock market prediction system 
 **Tech stack to build this:**
 
 - Python + `langgraph` or `crewai` for the multi-agent framework
-- `nsepy` / Zerodha Kite API / Angel One SmartAPI for market data or free apis for indian stock market
+- `nsepy`  for market data or free apis for indian stock market
 - `pandas`, `scikit-learn`, `pytorch` or `xgboost` for your model
 - `FastAPI` to expose the prediction as an endpoint
 - `APScheduler` or `celery` to run agents on market hours schedule
