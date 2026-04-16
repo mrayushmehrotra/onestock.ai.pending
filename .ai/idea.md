@@ -1,29 +1,41 @@
-Here's the architecture for a multi-agent Indian stock market prediction system built around your local model:Click any box to dive deeper. Here's the breakdown of the full system:
+# OneStock AI: Intelligent Indian Stock Market Analysis
 
-**The 6 agents and what they do:**
+## Project Overview
+OneStock AI is a high-performance, reasoning-focused AI engine tailored specifically for the Indian Stock Market (NSE/BSE). It combines real-time news scraping with seasonal/weather-aware reasoning to provide actionable market directions and individual stock insights.
 
-1. **Orchestrator Agent** — the brain. It schedules when each agent runs (e.g., data fetch at market open, prediction at 9:10 AM), aggregates outputs, and handles failures if one agent is down.
+## Core Philosophical Principles
+- **Reasoning First**: The model MUST perform internal chain-of-thought (CoT) reasoning before delivering any market advice.
+- **Small & Quick**: Optimized for low latency and high throughput, allowing for real-time analysis without massive infrastructure costs.
+- **Context Awareness**: Beyond numbers, the model understands environmental factors (weather, seasons) and their impact on consumer behavior and industry performance in India.
 
-2. **Data Fetcher Agent** — pulls live + historical data from NSE/BSE via APIs like `nsepy`, `yfinance` (for Indian tickers), or Zerodha Kite API. Collects OHLCV, delivery %, FII/DII data.
+## Key Features
 
-3. **Technical Analyst Agent** — computes indicators: RSI, MACD, Bollinger Bands, EMA crossovers, support/resistance zones. Libraries: `ta`, `pandas-ta`.
+### 1. Fine-tuned Reasoning Model
+- **Base Architecture**: A small-parameter LLM (e.g., Phi-3, SmolLM, or Mistral-7B) fine-tuned on financial data, NSE/BSE historical filings, and Indian economic news.
+- **Reasoning Engine**: Built-in prompts to enforce step-by-step logic:
+    1.  Sentiment Analysis (from News/Socials)
+    2.  Macro-economic Context (Seasons/Weather)
+    3.  Technical Indicators (Volume/Price Action)
+    4.  Conclusion & Recommendation
 
-4. **Fundamental Analyst Agent** — scrapes or uses APIs for P/E, EPS growth, promoter holding %, debt-to-equity, sector rotation signals from Screener.in or Tijori Finance.
+### 2. Seasonal & Weather-Driven Intelligence
+The model identifies shifts in demand based on climate and time of year:
+- **Summer Transition**: Focus on Solar Energy companies, cooling/appliance manufacturers (ACs, Refrigerators), and beverage industries.
+- **Winter Transition**: Focus on Thermal wear, heating solutions, and power-intensive sectors.
+- **Monsoon**: Focus on Agriculture-linked stocks, fertilizers, and logistics.
 
-5. **Sentiment Agent** — scores news from Moneycontrol, Economic Times, and Reddit's r/IndiaInvestments using lightweight NLP (VADER or a fine-tuned model).
+### 3. Automated News Scraping & Learning
+- **Sources**: Real-time scraping of major Indian newspapers (Economic Times, LiveMint, MoneyControl, Business Standard).
+- **Directional Analysis**: Aggregates sentiment to predict overall market movement (Bullish/Bearish/Neutral) for the day.
 
-6. **Feature Engineering Agent** — normalises all outputs into a single feature vector per stock and feeds it into your local model.
+### 4. Backend Architecture
+- **API**: FastAPI-based backend serving model inferences.
+- **Web Scraper Pipeline**: Celery/Redis for asynchronous newspaper scraping and embedding generation.
+- **Database**: Vector DB (e.g., Pinecone or Chroma) to store historical news context for RAG-enhanced reasoning.
 
-**On the local model side**, the most practical stack:
-
-- **LSTM or Transformer** if you have sequential price data and want deep learning
-- **XGBoost / LightGBM** if you want interpretability and faster training — often beats deep learning for tabular stock data
-- Train on 3–5 years of NSE/BSE data, with Nifty 500 universe as your pool
-
-**Tech stack to build this:**
-
-- Python + `langgraph` or `crewai` for the multi-agent framework
-- `nsepy`  for market data or free apis for indian stock market
-- `pandas`, `scikit-learn`, `pytorch` or `xgboost` for your model
-- `FastAPI` to expose the prediction as an endpoint
-- `APScheduler` or `celery` to run agents on market hours schedule
+## Implementation Roadmap
+1. [ ] **Phase 1**: News Scraper setup and initial dataset curation for Indian Market.
+2. [ ] **Phase 2**: Fine-tuning the small-parameter reasoning model.
+3. [ ] **Phase 3**: Developing the Seasonal/Weather weightage algorithm.
+4. [ ] **Phase 4**: FastAPI Backend integration and real-time inference testing.
+5. [ ] **Phase 5**: UI/Dashboard for visualization of reasoning and stock picks.
