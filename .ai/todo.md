@@ -1,63 +1,54 @@
 # OneStock AI Implementation Checklist
 
-## 1. Project Foundation
-- [x] Initialize project structure
-- [x] Set up Python environment and `requirements.txt`
-- [x] Configure environment variables (`.env`) for scrapers and database
+## Phase 1: Foundation & Setup (COMPLETE)
+- [x] Initialize project structure (src/agents, src/scrapers, etc.)
+- [x] Set up `requirements.txt` with essential scraping & ML libraries
+- [x] Configure `.env.example` for API keys and environment variables
 - [x] Initialize Git repository
 
-## 2. Scraping & Data Pipeline (Indian Focus)
-- [ ] **News Scrapers**:
-    - [ ] Implement scraper for *The Economic Times* (Markets section)
-    - [ ] Implement scraper for *LiveMint*
-    - [ ] Implement scraper for *MoneyControl*
-- [ ] **Stock Data**:
-    - [ ] Integration with `nsepy` for NSE/BSE ticker data
-    - [ ] Historical data curation for fine-tuning dataset
-- [ ] **Weather/Seasonal Data**:
-    - [ ] Integration with an OpenWeather API (or similar) to track Indian weather trends
-    - [ ] Build a mapping of Indian seasons to NSE/BSE sectors
+## Phase 2: Data Engineering (News & Market Scrapers)
+- [ ] **Unified Scraper Framework**:
+    - [x] Implement `BaseScraper` class with retry logic and standard headers
+    - [x] Create a `ScraperManager` to orchestrate all scrapers
+- [ ] **News Sources (BeautifulSoup4)**:
+    - [x] Implement `ETScraper` (Economic Times Markets)
+    - [x] Implement `MintScraper` (LiveMint Markets)
+    - [x] Implement `MoneyControlScraper` (MoneyControl Markets)
+    - [x] Implement `BSScraper` (Business Standard Markets)
+- [ ] **Content Extraction for Reasoning**:
+    - [ ] Extract not just headlines but brief summaries/content snippets
+    - [ ] Ticker extraction logic (identifying stock names in text)
+- [ ] **Scheduler & Automation**:
+    - [ ] Implement a 4-hour background scheduler using `APScheduler` or `Celery`
+    - [ ] Ensure deduplication of news items in the database
 
-## 3. Model Fine-Tuning (Small & Quick)
-- [ ] **Dataset Preparation**:
-    - [ ] Curate 5,000+ samples of Indian financial news paired with market movement
-    - [ ] Format data for Chain-of-Thought (CoT) training (Reasoning -> Prediction)
-- [ ] **Fine-Tuning**:
-    - [ ] Select base model (e.g., SmolLM-135M or Phi-3-mini)
-    - [ ] Fine-tune on curated financial & seasonal dataset
-    - [ ] Quantize model (GGUF/AWQ) for "Quick" performance
-- [ ] **Reasoning Engine**:
-    - [ ] Develop internal prompt templates to force CoT steps
+## Phase 3: Seasonal & Market Intelligence
+- [x] **Market Data**:
+    - [x] Integration with `nsepy` for NSE/BSE historical/real-time data
+- [ ] **Seasonal Intelligence Engine**:
+    - [x] Mapping of Indian months/seasons to specific sectors (Solar, Agriculture, Woolens, etc.)
+    - [x] Logic to fetch current weather trends and adjust sector weightage
+- [x] **Financial Database**:
+    - [x] Set up Vector DB (ChromaDB) for storing news embeddings
+    - [x] Implement local storage for scraped headlines and market state
 
-## 4. Logic & Intelligence Engine
-- [ ] **Seasonal/Weather Module**:
-    - [ ] Logic for detecting Summer/Winter transitions
-    - [ ] Sector weightage algorithm (e.g., +20% Solar in Summer)
-- [ ] **Directional Analyst**:
-    - [ ] News-to-Sentiment aggregator
-    - [ ] Overall Market Direction predictor (Nifty50/Sensex focus)
+## Phase 4: AI Model Fine-Tuning & Reasoning
+- [x] **Dataset Preparation**:
+    - [x] Create a 'Reasoning' dataset: `[News + Season + Market State] -> [Step-by-Step Logic] -> [Prediction]`
+- [ ] **Model Selection & Fine-Tuning**:
+    - [x] Select base model (e.g., SmolLM-135M or Phi-3-mini) on Indian stock market context
+    - [ ] Implement Chain-of-Thought (CoT) prompting strategy
+- [ ] **Inference Optimizer**:
+    - [ ] Quantize model for low-latency CPU/Local execution
 
-## 5. Backend Architecture
-- [ ] **Database Setup**:
-    - [ ] Vector Database (ChromaDB) for news context
-    - [ ] SQLite/PostgreSQL for tracking prediction outcomes
-- [ ] **API (FastAPI)**:
-    - [ ] `/predict`: Reasoning-first stock prediction endpoint
-    - [ ] `/market-direction`: Aggregated daily outlook
-    - [ ] `/seasonal-picks`: Top stocks based on weather context
-- [ ] **Scheduler**:
-    - [ ] Automated scraping every 4 hours
-    - [ ] Nightly model retraining/context update
+## Phase 5: Backend & API Development
+- [x] **FastAPI Backend**:
+    - [x] `/predict`: End-to-end reasoning and stock prediction
+    - [x] `/daily-analysis`: Summary of market direction based on news
+- [ ] **Frontend (Optional/WIP)**:
+    - [ ] Simple dashboard to visualize reasoning steps and stock picks
 
-## 6. Testing & Evaluation
-- [ ] Unit tests for scrapers
-- [ ] Benchmarking model latency (target < 500ms for reasoning)
-- [ ] Backtesting seasonal picks against past 2 years of market data
-
-## 7. Deployment
-- [ ] Dockerize the entire stack
-- [ ] Set up basic monitoring for scraper failures
-- [ ] (Optional) Develop simple frontend for OneStock AI visualization
-
-
-livemint.com, economictimes.com, moneycontrol.com, business-standard.com use this websites for scrapping
+## Phase 6: Validation & Polish
+- [ ] Backtesting the seasonal logic against 2 years of history
+- [ ] Evaluation of model reasoning accuracy
+- [ ] Final performance optimization for the scraping pipeline

@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-yfinance
+nsepy
 requests
 beautifulsoup4
 lxml
@@ -14,3 +14,9 @@ sqlalchemy
 psycopg2-binary
 celery
 redis
+huggingface_hub
+accelerate
+bitsandbytes
+datasets
+peft
+python-weather

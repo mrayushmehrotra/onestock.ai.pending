@@ -3,11 +3,11 @@ from bs4 import BeautifulSoup
 from typing import List, Dict, Any
 from datetime import datetime
 
-class MintScraper(BaseScraper):
+class MoneyControlScraper(BaseScraper):
     def __init__(self):
         super().__init__()
-        self.base_url = "https://www.livemint.com"
-        self.markets_url = f"{self.base_url}/market/stock-market-news"
+        self.base_url = "https://www.moneycontrol.com"
+        self.markets_url = f"{self.base_url}/news/business/markets/"
 
     def scrape(self) -> List[Dict[str, Any]]:
         html = self.fetch_page(self.markets_url)
@@ -17,28 +17,31 @@ class MintScraper(BaseScraper):
         soup = BeautifulSoup(html, 'lxml')
         news_items = []
         
-        # Selectors identified: h2.agencySeoClass a
-        links = soup.select('h2.agencySeoClass a') or soup.select('h2.tagTitle a')
+        # Selector identified: li.clearfix
+        items = soup.select('li.clearfix')
         
-        for link in links:
-            title = link.get_text(strip=True)
-            href = link.get('href', '')
+        for li in items:
+            a_tag = li.find('a')
+            h2_tag = li.find('h2')
             
-            if title and href and len(title) > 10:
+            if not a_tag:
+                continue
+                
+            title = a_tag.get('title') or (h2_tag.get_text(strip=True) if h2_tag else a_tag.get_text(strip=True))
+            href = a_tag.get('href')
+            
+            if title and href and '/news/' in href:
                 full_url = href if href.startswith('http') else f"{self.base_url}{href}"
                 
-                # Try to get summary from parent container's <p> tag
-                parent = link.find_parent('div', class_='listing-story')
-                summary = ""
-                if parent:
-                    p_tag = parent.find('p')
-                    summary = p_tag.get_text(strip=True) if p_tag else ""
+                # Try to get summary if available in 'p' tag
+                p_tag = li.find('p')
+                summary = p_tag.get_text(strip=True) if p_tag else ""
 
                 news_items.append({
                     "title": title,
                     "summary": summary,
                     "url": full_url,
-                    "source": "LiveMint",
+                    "source": "MoneyControl",
                     "scraped_at": datetime.now().isoformat()
                 })
         
@@ -47,7 +50,7 @@ class MintScraper(BaseScraper):
         return list(unique_news)
 
 if __name__ == "__main__":
-    scraper = MintScraper()
+    scraper = MoneyControlScraper()
     results = scraper.scrape()
     for item in results[:5]:
-        print(f"Title: {item['title']}\nURL: {item['url']}\n")
+        print(f"Title: {item['title']}\nSummary: {item['summary']}\nURL: {item['url']}\n")
